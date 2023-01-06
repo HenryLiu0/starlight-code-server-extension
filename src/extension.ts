@@ -2,6 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
+import { CreatePipeProvider } from './createPipeline';
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -20,6 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+
+	const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
+		? vscode.workspace.workspaceFolders[0].uri.fsPath : undefined;
+
+	const createPipelineProvider = new CreatePipeProvider(rootPath);
+	vscode.window.registerTreeDataProvider("create-pipeline", createPipelineProvider);
 }
 
 // This method is called when your extension is deactivated

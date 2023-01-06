@@ -18,8 +18,30 @@
       {
         "command": "starlight-extension.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "starlight-extension.on_item_clicked",
+        "title": "starlight item clicked"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "starlight",
+          "title": "Starlight",
+          "icon": "$(star)"
+        }
+      ]
+    },
+    "views": {
+      "starlight": [
+        {
+          "id": "create-pipeline",
+          "name": "Create Pipeline File",
+          "type": "tree"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -30,7 +52,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
+    "@types/vscode": "^1.71.0",
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
