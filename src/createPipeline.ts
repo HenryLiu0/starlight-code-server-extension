@@ -165,23 +165,29 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
                 for (const child of item.children) {
                     if (child.iconPath instanceof vscode.ThemeIcon && child.iconPath.id === 'pass-filled') {
                         if (item.label === 'software stack') {
-                            if (child.label === 'basic algorithm') {
-                                ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1';
-                            } else if (child.label === 'medical biology') {
-                                ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:medical-biology';
-                            } else if (child.label === '人工智能与大数据') {
-                                ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:ai-bigdata';
+                            // if (child.label === 'basic algorithm') {
+                            //     ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1';
+                            // } else if (child.label === 'medical biology') {
+                            //     ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:medical-biology';
+                            // } else if (child.label === '人工智能与大数据') {
+                            //     ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:ai-bigdata';
+                            // }
+                            if (typeof child.label === 'string') {
+                                ciCodeFile['compile-project']['image'] = this.ciMap['software stack'][child.label.toString()]['image'];
                             }
                         } else if (item.label === 'platform') {
-                            if (child.label === 'TianHe') {
-                                ciCodeFile['compile-project']['tags'] = ['TianHe'];
-                                ciCodeFile['build-image']['tags'] = ['TianHe'];
-                            } else if (child.label === 'ShenWei') {
-                                ciCodeFile['compile-project']['tags'] = ['ShenWei'];
-                                ciCodeFile['build-image']['tags'] = ['ShenWei'];
+                            // if (child.label === 'TianHe') {
+                            //     ciCodeFile['compile-project']['tags'] = ['TianHe'];
+                            //     ciCodeFile['build-image']['tags'] = ['TianHe'];
+                            // } else if (child.label === 'ShenWei') {
+                            //     ciCodeFile['compile-project']['tags'] = ['ShenWei'];
+                            //     ciCodeFile['build-image']['tags'] = ['ShenWei'];
+                            // }
+                            if (typeof child.label === 'string') {
+                                ciCodeFile['compile-project']['tags'][0] = this.ciMap['platform'][child.label.toString()]['tags'][0];
+                                ciCodeFile['build-image']['tags'][0] = this.ciMap['platform'][child.label.toString()]['tags'][0];
                             }
                         }
-                        // ciCodeFile['compile-project']['image'] = this.ciMap[item.label][child.label]['image'];
                     }
                 }
             }
