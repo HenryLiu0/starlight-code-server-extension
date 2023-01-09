@@ -1,4 +1,7 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as YAML from 'yaml';
 
 export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeItem> {
     // onDidChangeTreeData?: vscode.Event<CreatePipeItem | null | undefined> | undefined;
@@ -9,6 +12,7 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
       this._onDidChangeTreeData.fire();
     }
     data: CreatePipeItem[];
+    rootPath: string | undefined;
 
     constructor(private workspaceRoot: string | undefined) {
         vscode.commands.registerCommand('starlight-extension.on_item_clicked', item => this.onItemClicked(item));
@@ -23,6 +27,7 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
                 new CreatePipeItem('ShenWei')
             ]),
         ];
+        this.rootPath = workspaceRoot;
     }
 
     getTreeItem(element: CreatePipeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -95,9 +100,93 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
                 }
             }
         }
-        
+
         // 生成.gitlab-ci.yml文件
-        
+        // const content = 'exampleContent';
+        // const filePath = path.join(vscode.workspace.rootPath, 'fileName.extension');
+        // fs.writeFileSync(filePath, content, 'utf8');
+
+        // 打开.gitlab-ci.yml文件
+        // console.log(__dirname);  // out
+
+        // vscode.window.showInformationMessage(buffer);
+        // const openPath = vscode.Uri.file(filePath);
+        // vscode.workspace.openTextDocument(openPath).then(doc => {
+            // vscode.window.showTextDocument(doc);
+        // });
+        const ciTemplateFilePath = path.join(__dirname, '..', 'ci', '.gitlab-ci.yml');
+        var buffer = fs.readFileSync(ciTemplateFilePath, 'utf8');
+        let ciTemplateFile = YAML.parse(buffer);
+        console.log(ciTemplateFile);
+
+        if (this.rootPath === undefined) {
+            vscode.window.showErrorMessage('请先打开一个文件夹');
+            return;
+        }
+        // let ciCodeFile = ciTemplateFile;
+        // 根据check修改ciCodeFile
+        let ciCodeFile = this.ciYmlModify(ciTemplateFile);
+        const ciCodeFilePath = path.join(this.rootPath, '.gitlab-ci.yml');
+        // 写文件加上日期
+        const date = new Date();
+        const dateString = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds();
+        let out = '#' + dateString + '\n' + YAML.stringify(ciCodeFile);
+        fs.writeFileSync(ciCodeFilePath, out, 'utf8');
+    }
+
+    // map映射数据
+    ciMap: any = {
+        'software stack': {
+            'basic algorithm': {
+                'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1',
+            },
+            'medical biology': {
+                'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:medical-biology',
+            },
+            '人工智能与大数据': {
+                'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:ai-bigdata',
+            }
+        },
+        'platform': {
+            'TianHe': {
+                'tags': ['TianHe'],
+            },
+            'ShenWei': {
+                'tags': ['ShenWei'],
+            }
+        }
+    };
+
+    ciYmlModify(ciTemplateFile: any) {
+        let ciCodeFile = ciTemplateFile;
+        // 修改tags和image
+        for (const item of this.data) {
+            if(item.children) {
+                for (const child of item.children) {
+                    if (child.iconPath instanceof vscode.ThemeIcon && child.iconPath.id === 'pass-filled') {
+                        if (item.label === 'software stack') {
+                            if (child.label === 'basic algorithm') {
+                                ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1';
+                            } else if (child.label === 'medical biology') {
+                                ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:medical-biology';
+                            } else if (child.label === '人工智能与大数据') {
+                                ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:ai-bigdata';
+                            }
+                        } else if (item.label === 'platform') {
+                            if (child.label === 'TianHe') {
+                                ciCodeFile['compile-project']['tags'] = ['TianHe'];
+                                ciCodeFile['build-image']['tags'] = ['TianHe'];
+                            } else if (child.label === 'ShenWei') {
+                                ciCodeFile['compile-project']['tags'] = ['ShenWei'];
+                                ciCodeFile['build-image']['tags'] = ['ShenWei'];
+                            }
+                        }
+                        // ciCodeFile['compile-project']['image'] = this.ciMap[item.label][child.label]['image'];
+                    }
+                }
+            }
+        }
+        return ciCodeFile;
     }
 
 }
