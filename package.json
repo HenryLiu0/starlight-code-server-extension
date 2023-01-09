@@ -2,6 +2,13 @@
   "name": "starlight-extension",
   "displayName": "Starlight-Extension",
   "description": "",
+  "author": {
+		"name": "HenryLiu"
+	},
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/HenryLiu0/starlight-code-server-extension.git"
+	},
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.71.0"
