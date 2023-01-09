@@ -17,12 +17,18 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
     constructor(private workspaceRoot: string | undefined) {
         vscode.commands.registerCommand('starlight-extension.on_item_clicked', item => this.onItemClicked(item));
         this.data = [
-            new CreatePipeItem('software stack', [
-                new CreatePipeItem('basic algorithm'),
-                new CreatePipeItem('medical biology'),
-                new CreatePipeItem('人工智能与大数据')
+            new CreatePipeItem('软件栈', [
+                new CreatePipeItem('基础算法库', [
+                    new CreatePipeItem('Metis'),new CreatePipeItem('SciPy'),new CreatePipeItem('NumPy'),new CreatePipeItem('ELPA'),
+                ]),
+                new CreatePipeItem('生物医药', [
+                    new CreatePipeItem('Gromacs'),new CreatePipeItem('NWChem'),new CreatePipeItem('NAMD'),new CreatePipeItem('AMBER'),
+                ]),
+                new CreatePipeItem('人工智能与大数据', [
+                    new CreatePipeItem('StarBALib'),new CreatePipeItem('Mimir'),new CreatePipeItem('RTAI'),
+                ])
             ]),
-            new CreatePipeItem('platform', [
+            new CreatePipeItem('平台', [
                 new CreatePipeItem('TianHe'),
                 new CreatePipeItem('ShenWei')
             ]),
@@ -132,22 +138,23 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
         const dateString = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds();
         let out = '#' + dateString + '\n' + YAML.stringify(ciCodeFile);
         fs.writeFileSync(ciCodeFilePath, out, 'utf8');
+        vscode.window.showInformationMessage(".gitlab-ci.yml文件生成成功");
     }
 
     // map映射数据
     ciMap: any = {
-        'software stack': {
-            'basic algorithm': {
+        '软件栈': {
+            '基础算法库': {
                 'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1',
             },
-            'medical biology': {
+            '生物医药': {
                 'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:medical-biology',
             },
             '人工智能与大数据': {
                 'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:ai-bigdata',
             }
         },
-        'platform': {
+        '平台': {
             'TianHe': {
                 'tags': ['TianHe'],
             },
@@ -164,18 +171,18 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
             if(item.children) {
                 for (const child of item.children) {
                     if (child.iconPath instanceof vscode.ThemeIcon && child.iconPath.id === 'pass-filled') {
-                        if (item.label === 'software stack') {
-                            // if (child.label === 'basic algorithm') {
+                        if (item.label === '软件栈') {
+                            // if (child.label === '基础算法库') {
                             //     ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1';
-                            // } else if (child.label === 'medical biology') {
+                            // } else if (child.label === '生物医药') {
                             //     ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:medical-biology';
                             // } else if (child.label === '人工智能与大数据') {
                             //     ciCodeFile['compile-project']['image'] = 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:ai-bigdata';
                             // }
                             if (typeof child.label === 'string') {
-                                ciCodeFile['compile-project']['image'] = this.ciMap['software stack'][child.label.toString()]['image'];
+                                ciCodeFile['compile-project']['image'] = this.ciMap['软件栈'][child.label.toString()]['image'];
                             }
-                        } else if (item.label === 'platform') {
+                        } else if (item.label === '平台') {
                             // if (child.label === 'TianHe') {
                             //     ciCodeFile['compile-project']['tags'] = ['TianHe'];
                             //     ciCodeFile['build-image']['tags'] = ['TianHe'];
@@ -184,8 +191,8 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
                             //     ciCodeFile['build-image']['tags'] = ['ShenWei'];
                             // }
                             if (typeof child.label === 'string') {
-                                ciCodeFile['compile-project']['tags'][0] = this.ciMap['platform'][child.label.toString()]['tags'][0];
-                                ciCodeFile['build-image']['tags'][0] = this.ciMap['platform'][child.label.toString()]['tags'][0];
+                                ciCodeFile['compile-project']['tags'][0] = this.ciMap['平台'][child.label.toString()]['tags'][0];
+                                ciCodeFile['build-image']['tags'][0] = this.ciMap['平台'][child.label.toString()]['tags'][0];
                             }
                         }
                     }
@@ -205,9 +212,22 @@ class CreatePipeItem extends vscode.TreeItem {
         super(label, children === undefined ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Expanded);
         this.children = children;
         // 最底层item有box
-        if (children === undefined) {
-            this.iconPath = new vscode.ThemeIcon('circle-large-outline');
-        } else if (children !== undefined) {
+        // if (children === undefined) {
+        //     this.iconPath = new vscode.ThemeIcon('circle-large-outline');
+        // }
+        if (label === '软件栈') {
+            children?.forEach((item) => {
+                item.iconPath = new vscode.ThemeIcon('circle-large-outline');
+                item.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+            });
+        }
+        if (label === '平台') {
+            children?.forEach((item) => {
+                item.iconPath = new vscode.ThemeIcon('circle-large-outline');
+                // item.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+            });
+        }
+        if (children !== undefined) {
             // 给children的parent赋值
             children.forEach(element => {
                 element.parent = this;
