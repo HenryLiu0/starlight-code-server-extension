@@ -10,7 +10,10 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:starlight-extension.helloWorld"
+    "onView:create-pipeline",
+    "onCommand:starlight-extension.helloWorld",
+    "onCommand:starlight-extension.on_item_clicked",
+    "onCommand:starlight-extension.create"
   ],
   "main": "./out/extension.js",
   "contributes": {
