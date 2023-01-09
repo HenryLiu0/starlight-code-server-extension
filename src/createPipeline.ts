@@ -21,8 +21,20 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
                 new CreatePipeItem('基础算法库', [
                     new CreatePipeItem('Metis'),new CreatePipeItem('SciPy'),new CreatePipeItem('NumPy'),new CreatePipeItem('ELPA'),
                 ]),
+                new CreatePipeItem('大气海洋', [
+                    new CreatePipeItem('WRF'),new CreatePipeItem('NAQPMS'),new CreatePipeItem('LICOM'),new CreatePipeItem('IAP DGVM'),
+                ]),
+                new CreatePipeItem('工业制造', [
+                    new CreatePipeItem('Openfoam'),new CreatePipeItem('SU2'),new CreatePipeItem('OpenCFD'),new CreatePipeItem('CFL3D'),
+                ]),
+                new CreatePipeItem('材料设计', [
+                    new CreatePipeItem('CP2K'),new CreatePipeItem('LAMMPS'),new CreatePipeItem('GROMOS'),new CreatePipeItem('NAMD'),
+                ]),
                 new CreatePipeItem('生物医药', [
-                    new CreatePipeItem('Gromacs'),new CreatePipeItem('NWChem'),new CreatePipeItem('NAMD'),new CreatePipeItem('AMBER'),
+                    new CreatePipeItem('Gromacs'),new CreatePipeItem('LAMMPS'),new CreatePipeItem('Peridigm'),new CreatePipeItem('CASTEP'),
+                ]),
+                new CreatePipeItem('能源', [
+                    new CreatePipeItem('Openmoc'),new CreatePipeItem('RT'),new CreatePipeItem('OOFEM'),new CreatePipeItem('espreso'),
                 ]),
                 new CreatePipeItem('人工智能与大数据', [
                     new CreatePipeItem('StarBALib'),new CreatePipeItem('Mimir'),new CreatePipeItem('RTAI'),
@@ -146,6 +158,18 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
         '软件栈': {
             '基础算法库': {
                 'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1',
+            },
+            '大气海洋': {
+                'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:atmosphere-ocean',
+            },
+            '工业制造': {
+                'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:industry-manufacture',
+            },
+            '材料设计': {
+                'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:material-design',
+            },
+            '能源': {
+                'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:energy',
             },
             '生物医药': {
                 'image': 'hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04:medical-biology',
