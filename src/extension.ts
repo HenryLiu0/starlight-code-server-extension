@@ -28,6 +28,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const createPipelineProvider = new CreatePipeProvider(rootPath);
 	vscode.window.registerTreeDataProvider("create-pipeline", createPipelineProvider);
+	vscode.commands.registerCommand('starlight-extension.create', () =>
+		createPipelineProvider.generateGitlabCiYml()
+	);
 }
 
 // This method is called when your extension is deactivated

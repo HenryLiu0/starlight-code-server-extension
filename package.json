@@ -22,6 +22,11 @@
       {
         "command": "starlight-extension.on_item_clicked",
         "title": "starlight item clicked"
+      },
+      {
+        "command": "starlight-extension.create",
+        "title": "create",
+        "icon": "$(run)"
       }
     ],
     "viewsContainers": {
@@ -39,6 +44,15 @@
           "id": "create-pipeline",
           "name": "Create Pipeline File",
           "type": "tree"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "starlight-extension.create",
+          "when": "view == create-pipeline",
+          "group": "navigation"
         }
       ]
     }

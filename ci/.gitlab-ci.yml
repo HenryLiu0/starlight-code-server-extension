@@ -1,0 +1,41 @@
+stages:
+  - compile
+  - build
+
+compile-project:
+  stage: compile
+  image: hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1
+  tags:
+    - pro-gitlab-venus-runner-test1
+  artifacts:
+    paths:
+      - bin/
+  script:
+    - make
+
+build-image:
+  stage: build
+  image: hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/docker:20.10.16
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  services:
+    - name: hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/docker:20.10.16-dind
+      alias: docker
+  tags:
+    - pro-gitlab-venus-runner-test1
+  dependencies:
+    - compile-project
+  before_script:
+    - env
+    - until docker info; do sleep 1; done
+    - wget www.baidu.com
+    - cat $HOME/.docker/config.json
+    - echo "$HUB_PASSWORD" | docker login hub.starlight.nscc-gz.cn --username $GITLAB_USER_LOGIN --password-stdin
+  after_script:
+    - docker logout hub.starlight.nscc-gz.cn
+  script:
+    - docker build -t hub.starlight.nscc-gz.cn/"$GITLAB_USER_LOGIN"_public/rtm3d:"$GITLAB_USER_LOGIN" .
+    - docker push hub.starlight.nscc-gz.cn/"$GITLAB_USER_LOGIN"_public/rtm3d:"$GITLAB_USER_LOGIN"

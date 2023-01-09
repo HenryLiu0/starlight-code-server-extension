@@ -1,0 +1,3 @@
+FROM hub.starlight.nscc-gz.cn/nscc-gz_hailiu_public/ubuntu-20.04-rtm3d:1
+
+COPY bin /root/bin/

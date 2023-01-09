@@ -15,13 +15,31 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
         this.data = [
             new CreatePipeItem('software stack', [
                 new CreatePipeItem('basic algorithm'),
-                new CreatePipeItem('medical biology')
+                new CreatePipeItem('medical biology'),
+                new CreatePipeItem('人工智能与大数据')
             ]),
             new CreatePipeItem('platform', [
                 new CreatePipeItem('TianHe'),
                 new CreatePipeItem('ShenWei')
             ]),
         ];
+    }
+
+    getTreeItem(element: CreatePipeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+        // 为item设置点击事件
+        element.command = {
+            command: 'starlight-extension.on_item_clicked',
+            title: '',
+            arguments: [element],
+        };
+        return element;
+    }
+
+    getChildren(element?: CreatePipeItem | undefined): vscode.ProviderResult<CreatePipeItem[]> {
+        if (element === undefined) {
+            return this.data;
+        }
+        return element.children;
     }
 
     onItemClicked(item: CreatePipeItem) {
@@ -56,22 +74,32 @@ export class CreatePipeProvider implements vscode.TreeDataProvider<CreatePipeIte
         vscode.window.showInformationMessage(item.label.toString());
     }
 
-    getTreeItem(element: CreatePipeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        // 为item设置点击事件
-        element.command = {
-            command: 'starlight-extension.on_item_clicked',
-            title: '',
-            arguments: [element],
-        };
-        return element;
+    // 生成.gitlab-ci.yml文件
+    generateGitlabCiYml() {
+        // 遍历data第一层，如果有两个以上checked报错
+        for (const item of this.data) {
+            let checkedCount = 0;
+            if(item.children) {
+                for (const child of item.children) {
+                    if (child.iconPath instanceof vscode.ThemeIcon && child.iconPath.id === 'pass-filled') {
+                        checkedCount++;
+                    }
+                }
+                if (checkedCount > 1) {
+                    vscode.window.showErrorMessage('只能选择一个' + item.label);
+                    return;
+                }
+                if (checkedCount === 0) {
+                    vscode.window.showErrorMessage('请选择' + item.label);
+                    return;
+                }
+            }
+        }
+        
+        // 生成.gitlab-ci.yml文件
+        
     }
 
-    getChildren(element?: CreatePipeItem | undefined): vscode.ProviderResult<CreatePipeItem[]> {
-        if (element === undefined) {
-            return this.data;
-        }
-        return element.children;
-    }
 }
 
 class CreatePipeItem extends vscode.TreeItem {
